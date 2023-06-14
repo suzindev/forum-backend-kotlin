@@ -20,6 +20,5 @@ data class Resposta(
     @ManyToOne
     val topico: Topico,
 
-    @Enumerated(EnumType.STRING)
     val solucao: Boolean
 )
