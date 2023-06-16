@@ -2,33 +2,36 @@ package br.com.suzintech.forum.service
 
 import br.com.suzintech.forum.dto.AtualizacaoTopicoForm
 import br.com.suzintech.forum.dto.TopicoForm
+import br.com.suzintech.forum.dto.TopicoPorCategoriaDTO
 import br.com.suzintech.forum.dto.TopicoView
 import br.com.suzintech.forum.exception.NotFoundException
 import br.com.suzintech.forum.mapper.TopicoFormMapper
 import br.com.suzintech.forum.mapper.TopicoViewMapper
 import br.com.suzintech.forum.repository.TopicoRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import java.util.stream.Collectors
+import javax.persistence.EntityManager
 
 @Service
 class TopicoService(
     private val repository: TopicoRepository,
     private val topicoViewMapper: TopicoViewMapper,
     private val topicoFormMapper: TopicoFormMapper,
-    private val notFoundException: String = "Tópico não encontrado!"
+    private val notFoundException: String = "Tópico não encontrado!",
+    private val em: EntityManager
 ) {
 
-    fun listar(nomeCurso: String?): List<TopicoView> {
+    fun listar(nomeCurso: String?, paginacao: Pageable): Page<TopicoView> {
         val topicos = if (nomeCurso == null) {
-            repository.findAll()
+            repository.findAll(paginacao)
         } else {
-            repository.findByCursoNome(nomeCurso)
+            repository.findByCursoNome(nomeCurso, paginacao)
         }
 
-        return topicos.stream()
-            .map { t ->
-                topicoViewMapper.map(t)
-            }.collect(Collectors.toList())
+        return topicos.map { t ->
+            topicoViewMapper.map(t)
+        }
     }
 
     fun buscarPorId(id: Long): TopicoView {
@@ -58,5 +61,9 @@ class TopicoService(
 
     fun deletar(id: Long) {
         repository.deleteById(id)
+    }
+
+    fun relatorio(): List<TopicoPorCategoriaDTO> {
+        return repository.relatorio()
     }
 }
