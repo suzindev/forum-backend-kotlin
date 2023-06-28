@@ -11,6 +11,7 @@ import br.com.suzintech.forum.repository.TopicoRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import java.time.LocalDate
 import javax.persistence.EntityManager
 
 @Service
@@ -55,6 +56,7 @@ class TopicoService(
 
         topico.titulo = dto.titulo
         topico.mensagem = dto.mensagem
+        topico.dataAlteracao = LocalDate.now()
 
         return topicoViewMapper.map(topico)
     }
