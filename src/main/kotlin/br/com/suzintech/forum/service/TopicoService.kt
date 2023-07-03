@@ -12,15 +12,13 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import java.time.LocalDate
-import javax.persistence.EntityManager
 
 @Service
 class TopicoService(
     private val repository: TopicoRepository,
     private val topicoViewMapper: TopicoViewMapper,
     private val topicoFormMapper: TopicoFormMapper,
-    private val notFoundException: String = "Tópico não encontrado!",
-    private val em: EntityManager
+    private val notFoundException: String = "Tópico não encontrado!"
 ) {
 
     fun listar(nomeCurso: String?, paginacao: Pageable): Page<TopicoView> {
