@@ -8,6 +8,8 @@ import br.com.suzintech.forum.exception.NotFoundException
 import br.com.suzintech.forum.mapper.TopicoFormMapper
 import br.com.suzintech.forum.mapper.TopicoViewMapper
 import br.com.suzintech.forum.repository.TopicoRepository
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -21,6 +23,7 @@ class TopicoService(
     private val notFoundException: String = "Tópico não encontrado!"
 ) {
 
+    @Cacheable(cacheNames = ["Topicos"], key = "#root.method.name")
     fun listar(nomeCurso: String?, paginacao: Pageable): Page<TopicoView> {
         val topicos = if (nomeCurso == null) {
             repository.findAll(paginacao)
@@ -40,6 +43,7 @@ class TopicoService(
         return topicoViewMapper.map(topico)
     }
 
+    @CacheEvict(value = ["Topicos"], allEntries = true)
     fun cadastrar(dto: TopicoForm): TopicoView {
         val topico = topicoFormMapper.map(dto)
 
@@ -48,6 +52,7 @@ class TopicoService(
         return topicoViewMapper.map(topico)
     }
 
+    @CacheEvict(value = ["Topicos"], allEntries = true)
     fun atualizar(dto: AtualizacaoTopicoForm): TopicoView {
         val topico = repository.findById(dto.id)
             .orElseThrow { NotFoundException(notFoundException) }
@@ -59,6 +64,7 @@ class TopicoService(
         return topicoViewMapper.map(topico)
     }
 
+    @CacheEvict(value = ["Topicos"], allEntries = true)
     fun deletar(id: Long) {
         repository.deleteById(id)
     }
